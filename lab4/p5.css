@@ -1,0 +1,14 @@
+.l{
+    padding:5px;
+    background: lightgreen;
+    text-decoration: none;
+    margin:5px;
+    color:rgb(132, 144, 218);
+
+}
+.a{
+    width: 150px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 18px;
+}

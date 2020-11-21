@@ -1,0 +1,18 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+.btn{
+    font-size:16px;
+    padding:10px 20px;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    background-color: #4caf50;
+    display: inline-block;
+    color :white;
+    margin-top:10px;
+    margin-bottom: 10px;
+    margin-left: 45%;
+    margin-right: 41%;
+}
