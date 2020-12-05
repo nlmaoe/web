@@ -1,116 +1,60 @@
 import React from 'react';
+import {Link} from 'react-router-dom'
 import {
   Typography
 } from '@material-ui/core';
 import './userPhotos.css';
+import Image_card from "../img_card/Image_card"
 
-import {
-  Link
-} from 'react-router-dom';
-import Card from '@material-ui/core/Card';
-
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import axios from 'axios';
 /**
  * Define UserPhotos, a React componment of CS142 project #5
  */
 class UserPhotos extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {activeStep : 0,
-      lim: 0,
-      listItems123: [],}
-      axios.get('http://localhost:3000/photosOfUser/'+this.props.match.params.userId).then((response) => {
-       this.setState({listItems123: response.data})
-     }).catch((error)=>{
-       console.log(error);
+    this.state = undefined
+    
+  }
+  componentDidMount () {
+    fetch(`/user/${this.props.match.params.userId}`).then(response => response.json()).then(data => {
+      this.setState({ ...data })
+      this.props.setData(this.props.match.path,data.first_name)
+    });
+    fetch(`/photosOfUser/${this.props.match.params.userId}`).then(response => response.json()).then(data => {
+      this.setState({ photos:data })
     });
   }
 
-  CommentSec(comments){
-    
-    var pComment = comments.map((comm) =>
-    <CardContent key = {comm._id}>
-      
-    <Typography  variant="h6" align="left" color="secondary" > 
-
-      <Link to={"/users/" + comm.user._id} key={comm.user._id} style={{ textDecoration: 'none' }}>
-        <Button variant="contained" color="secondary">
-        {comm.user.first_name + " " + comm.user.last_name}
-          </Button></Link>
-    </Typography>
-    <Typography color="textSecondary" style={{ fontWeight : 'Gorgc'}}>
-      {comm.comment}
-    </Typography>
-    <Typography color="textSecondary" align="right" style={{ fontWeight : 'bold'}}>
-        {comm.date_time}  
-    </Typography>
-  </CardContent>
-    )
-    
-    return pComment
-  }
-
-  PhotoDetailer(){
-
-    var listItems = [];
-    listItems=this.state.listItems123;
-    console.log(listItems);
-    var listOfPhoto = listItems.map((photo) =>
-    <Card key = {photo._id} className = "pPhoto">
-    <CardContent>
-      <img src={"http://localhost:3000/images/" + photo.file_name } className = "pictures"></img>
-    </CardContent>
-    <CardContent>
-      <Typography  align="right"  color="textSecondary" >
-          Uploaded : {photo.date_time}
-      </Typography> 
-      {(typeof photo.comments !== "undefined" ) ? this.CommentSec(photo.comments): console.log("No comments: " + photo._id)}
-    </CardContent>      
-</Card>
-    
-    );
-    return listOfPhoto;
-  }
-
-  handleNext = () => {
-    var listes = this.PhotoDetailer();
-    var count = 0;
-    var i;
-
-    for (i in listes) {
-    if (listes.hasOwnProperty(i)) {
-        count++; 
+  componentDidUpdate(prevprop) {
+    if (prevprop.match.params.userId !== this.props.match.params.userId) {
+     fetch(`/user/${this.props.match.params.userId}`).then(response => response.json()).then(data => {
+      this.setState({ ...data })
+      this.props.setData(this.props.match.path,data.first_name)
+    });
+    fetch(`/photosOfUser/${this.props.match.params.userId}`).then(response => response.json()).then(data => {
+      this.setState({ photos:data })
+    });
     }
-}
-    if(count-1 !== this.state.activeStep)
-      this.setState((state) => ({ activeStep: state.activeStep + 1}));
-    if (count-1 === this.state.activeStep)
-    this.setState((state) => ({ activeStep: state.activeStep = 0}));
-  };
-
-  handleBack = () => {
-    if(0 !== this.state.activeStep)
-      this.setState((state) => ({ activeStep: state.activeStep - 1}));
-   if(0 === this.state.activeStep)
-   this.setState((state) => ({ activeStep: state.activeStep = 3}));
-  };
-
+  }
   render() {
     return (
-      <div> 
-              <Typography align="left" style={{ float: 'left' }}>
-              <Button variant="contained" color="secondary"  onClick={this.handleBack} >
-                Back
-              </Button >
-              </Typography>
-          <Typography align="right" style={{ float: 'right' }}><Button variant="contained" color="secondary" onClick={this. handleNext} >
-                Next
-              </Button>
-          </Typography>
-        {this.PhotoD()}
+      <div className="userPhoto">
+        {this.state ? (
+        <React.Fragment>
+          <div className="MYBUTTON">
+        <Link to={`/users/${this.state._id}`} >
+            <Typography variant="button" style={{fontSize:18}}>See details of {this.state.first_name}</Typography>
+        </Link>
+        </div>
+        {this.state.photos?
+          this.state.photos.map((el, ind) => <Image_card key={ind} data={el} name={this.state.first_name + " "+ this.state.last_name} />):""
+            }
+        </React.Fragment>
+        ):""
+      }
+        
       </div>
+
     );
   }
 }

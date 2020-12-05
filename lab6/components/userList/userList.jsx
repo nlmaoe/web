@@ -1,0 +1,55 @@
+import React from 'react';
+import {Link} from 'react-router-dom'
+import {
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+}
+from '@material-ui/core';
+import './userList.css';
+import Axios from "axios"
+/**
+ * Define UserList, a React componment of CS142 project #5
+ */
+class UserList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      List:[]
+    }
+  }
+  componentDidMount() {
+    Axios.get('/user/list').then(res => this.setState({List: data}));
+  }
+  render() {
+    return (
+      <div>
+        <Typography variant="body1">
+          <b>Friend List</b> 
+        </Typography>
+        <List component="nav">{
+          this.state.List.map((el, ind) => {
+            return (
+              <Link key={ind} to={`/users/${el._id}`}>
+                <ListItem>
+                  <ListItemText primary={`${el.first_name} ${el.last_name}`} />
+                </ListItem>
+                <Divider/>
+              </Link>
+            )
+          })
+        }
+        </List>
+        <Typography variant="body1">
+          <Link to="/users">
+            <b>See All Users</b>
+          </Link>
+        </Typography>
+      </div>
+    );
+  }
+}
+
+export default UserList;
